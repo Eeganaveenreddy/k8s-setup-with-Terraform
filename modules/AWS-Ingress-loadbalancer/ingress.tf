@@ -6,6 +6,7 @@ resource "kubernetes_ingress_v1" "app_ingress" {
       "kubernetes.io/ingress.class" = "alb"
       "alb.ingress.kubernetes.io/scheme" = "internet-facing"  # Change to "internal" if needed
       "alb.ingress.kubernetes.io/target-type" = "ip"
+      "alb.ingress.kubernetes.io/load-balancer-type" = "nlb"
     }
   }
 
