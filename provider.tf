@@ -10,3 +10,13 @@ terraform {
 provider "aws" {
   region = "ap-south-1"  # Change this to your preferred region
 }
+
+provider "kubernetes" {
+  config_path = "/home/scott/.kube/config" # Replace with your kubeconfig path
+  #context = "your-context" #if needed
+}
+
+
+
+
+
