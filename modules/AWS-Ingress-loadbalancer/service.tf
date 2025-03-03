@@ -15,6 +15,6 @@ resource "kubernetes_service" "app_service" {
       target_port = 8080  # Port on your pod
     }
 
-    type = "NodePort"  # Can also be "ClusterIP" if using an ALB
+    type = "LoadBalancer"  # Can also be "ClusterIP" if using an ALB
   }
 }
