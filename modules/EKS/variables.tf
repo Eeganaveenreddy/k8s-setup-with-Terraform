@@ -8,3 +8,12 @@ variable "role_arn" {
     type = string
 }
 
+variable "node_groups" {
+  description = "Map of node groups"
+  type = map(object({
+    desired_size = number
+    max_size     = number
+    min_size     = number
+    instance_types = list(string)
+  }))
+}
