@@ -17,3 +17,8 @@ variable "node_groups" {
     instance_types = list(string)
   }))
 }
+
+variable "region" {
+  default = "ap-south-1"
+  type = string
+}
