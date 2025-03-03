@@ -9,7 +9,7 @@ terraform.tfstate.backup
 *.pem
 *.key
 *.env
-*.tfvars
+# *.tfvars
 secrets.tfvars
 
 # Ignore logs and system files

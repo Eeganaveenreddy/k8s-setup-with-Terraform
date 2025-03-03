@@ -39,6 +39,7 @@ module "eks" {
   subnet_ids = [module.VPC.public_subnet_id-1, module.VPC.public_subnet_id-2]
   eks_policy_attach = module.iam-policy
   role_arn = module.iam-policy.aws_eks_cluster_role_arn_out
+  node_groups = var.node_groups
 }
 
 module "AWS-Ingress-loadbalancer" {
