@@ -13,7 +13,7 @@ resource "aws_eks_cluster" "eks_cluster" {
 
 resource "null_resource" "update_kubeconfig" {
   provisioner "local-exec" {
-    command = "aws eks update-kubeconfig --region ap-south-1 --name my-eks-cluster && kubectl cluster-info"
+    command = "aws eks update-kubeconfig --region ap-south-1 --name my-eks-cluster && kubectl cluster-info && sleep 60"
     interpreter = ["sh", "-c"]  # Ensures compatibility with Linux/Mac shell
   }
   depends_on = [ aws_eks_cluster.eks_cluster ]
