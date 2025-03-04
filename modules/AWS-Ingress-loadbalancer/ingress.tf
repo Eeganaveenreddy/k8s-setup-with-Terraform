@@ -3,10 +3,13 @@ resource "kubernetes_ingress_v1" "app_ingress" {
     name      = "app-ingress"
     namespace = "default"
     annotations = {
-      "kubernetes.io/ingress.class" = "alb"
-      "alb.ingress.kubernetes.io/scheme" = "internet-facing"  # Change to "internal" if needed
-      "alb.ingress.kubernetes.io/target-type" = "ip"
-      "alb.ingress.kubernetes.io/load-balancer-type" = "nlb"
+      "kubernetes.io/ingress.class"                   = "alb"
+      "alb.ingress.kubernetes.io/scheme"               = "internet-facing"  # Change to "internal" if needed
+      "alb.ingress.kubernetes.io/load-balancer-type"   = "nlb"  # Use NLB instead of ALB
+      "alb.ingress.kubernetes.io/target-type"          = "ip"
+      "alb.ingress.kubernetes.io/healthcheck-path"     = "/"   # Adjust to your app
+      "alb.ingress.kubernetes.io/healthcheck-protocol" = "HTTP"
+      "alb.ingress.kubernetes.io/healthcheck-port"     = "80"
     }
   }
 
