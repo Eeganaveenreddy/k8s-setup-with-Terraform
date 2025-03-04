@@ -13,7 +13,10 @@ resource "aws_eks_cluster" "eks_cluster" {
 
 resource "null_resource" "update_kubeconfig" {
   provisioner "local-exec" {
-    command = "aws eks update-kubeconfig --region ${var.region} --name ${aws_eks_cluster.eks_cluster.name}"
+    command = <<EOT
+      aws eks update-kubeconfig --region ${var.region} --name ${aws_eks_cluster.eks_cluster.name} \
+      && kubectl cluster-info
+    EOT
   }
   depends_on = [ aws_eks_cluster.eks_cluster ]
   
