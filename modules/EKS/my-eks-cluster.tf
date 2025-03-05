@@ -14,7 +14,8 @@ resource "aws_eks_cluster" "eks_cluster" {
 resource "null_resource" "update_kubeconfig" {
   provisioner "local-exec" {
     command = <<EOT
-      for i in {1..3}; do
+      for i in {1..3}; 
+      do
         aws eks update-kubeconfig --region ${var.region} --name ${aws_eks_cluster.eks_cluster.name} && exit 0
         echo "Retrying in 10 seconds..."
         sleep 10
