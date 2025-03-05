@@ -13,6 +13,15 @@ data "aws_eks_cluster" "my_cluster" {
   name = var.eks_cluster_name
 }
 
+data "aws_eks_cluster_auth" "eks_auth" {
+  name = data.aws_eks_cluster.my_cluster.name
+}
+
+# data "aws_iam_openid_connect_provider" "oidc" {
+#   # url = replace(data.aws_eks_cluster.my_cluster.identity[0].oidc[0].issuer, "https://", "")
+#    url = data.aws_eks_cluster.my_cluster.identity[0].oidc[0].issuer
+# }
+
 resource "aws_iam_role_policy_attachment" "alb_controller_policy" {
   policy_arn = aws_iam_policy.alb_controller_policy.arn
   role       = aws_iam_role.alb_controller_role.name
@@ -28,6 +37,7 @@ resource "aws_iam_role" "alb_controller_role" {
       Effect = "Allow"
       Principal = {
         Federated = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/${replace(data.aws_eks_cluster.my_cluster.identity[0].oidc[0].issuer, "https://", "")}"
+        # Federated = data.aws_iam_openid_connect_provider.oidc.arn
       }
       Action = "sts:AssumeRoleWithWebIdentity"
       Condition = {
@@ -61,6 +71,44 @@ resource "kubernetes_cluster_role" "alb_controller_role" {
     api_groups = ["networking.k8s.io"]
     resources  = ["ingresses"]
     verbs      = ["get", "list", "watch"]
+  }
+
+  rule {
+    api_groups = ["networking.k8s.io"]
+    resources  = ["ingressclasses"]
+    verbs      = ["get", "list", "watch"]
+  }
+
+  rule {
+    api_groups = ["networking.k8s.io"]
+    resources  = ["ingresses", "ingresses/status"]
+    verbs      = ["get", "list", "watch", "create", "update", "patch", "delete"]
+  }
+  rule {
+    api_groups = ["elbv2.k8s.aws"]
+    resources  = ["targetgroupbindings"]
+    verbs      = ["get", "list", "watch", "create", "update", "patch", "delete"]
+  }
+
+  rule {
+    api_groups = ["networking.k8s.io"]
+    resources  = ["ingresses", "ingresses/status"]
+    verbs      = ["get", "list", "watch", "create", "update", "patch", "delete"]
+  }
+  rule {
+    api_groups = [""]
+    resources  = ["services"]
+    verbs      = ["get", "list", "watch"]
+  }
+  rule {
+    api_groups = ["elbv2.k8s.aws"]
+    resources  = ["ingressclassparams"]
+    verbs      = ["get", "list", "watch"]
+  }
+  rule {
+    api_groups = [""]
+    resources  = ["configmaps"]
+    verbs      = ["get", "list", "watch", "create", "update", "patch"]
   }
 }
 
@@ -106,13 +154,12 @@ resource "kubernetes_deployment" "alb_controller_deployment" {
 
   spec {
     replicas = 1
-
     selector {
       match_labels = {
         app = "aws-load-balancer-controller"
       }
     }
-
+    
     template {
       metadata {
         labels = {
@@ -121,6 +168,8 @@ resource "kubernetes_deployment" "alb_controller_deployment" {
       }
 
       spec {
+        # Add serviceAccountName here
+        service_account_name = "aws-load-balancer-controller"
         container {
           image = "602401143452.dkr.ecr.us-west-2.amazonaws.com/amazon/aws-load-balancer-controller:v2.6.1"
           name  = "aws-load-balancer-controller"
@@ -132,7 +181,8 @@ resource "kubernetes_deployment" "alb_controller_deployment" {
 
           args = [
             "--cluster-name=${var.eks_cluster_name}",
-            "--ingress-class=alb"
+            "--ingress-class=alb",
+            "--aws-region=ap-south-1"
           ]
 
           env {
