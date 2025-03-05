@@ -13,9 +13,20 @@ resource "aws_eks_cluster" "eks_cluster" {
 
 resource "null_resource" "update_kubeconfig" {
   provisioner "local-exec" {
-    command = "aws eks update-kubeconfig --region ap-south-1 --name my-eks-cluster && kubectl cluster-info && sleep 60"
-    interpreter = ["sh", "-c"]  # Ensures compatibility with Linux/Mac shell
+    command = <<EOT
+      for i in {1..3}; do
+        aws eks update-kubeconfig --region ${var.region} --name ${aws_eks_cluster.eks_cluster.name} && exit 0
+        echo "Retrying in 10 seconds..."
+        sleep 10
+      done
+      echo "Failed to update kubeconfig after 3 attempts"
+      exit 1
+    EOT
   }
+  # provisioner "local-exec" {
+  #   command = "aws eks update-kubeconfig --region ap-south-1 --name my-eks-cluster && kubectl cluster-info && sleep 60"
+  #   interpreter = ["sh", "-c"]  # Ensures compatibility with Linux/Mac shell
+  # }
   depends_on = [ aws_eks_cluster.eks_cluster ]
   
 }
