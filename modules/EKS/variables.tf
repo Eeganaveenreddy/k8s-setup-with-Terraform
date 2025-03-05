@@ -8,6 +8,10 @@ variable "role_arn" {
     type = string
 }
 
+variable "eks_cluster_role" {
+  type = string
+}
+
 variable "node_groups" {
   description = "Map of node groups"
   type = map(object({

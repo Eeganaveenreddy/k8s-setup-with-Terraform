@@ -13,6 +13,7 @@ module "eks" {
   eks_policy_attach = module.iam-policy
   role_arn = module.iam-policy.aws_eks_cluster_role_arn_out
   node_groups = var.node_groups
+  eks_cluster_role = module.iam-policy.aws_eks_cluster_role_name
 }
 
 module "AWS-Ingress-loadbalancer" {

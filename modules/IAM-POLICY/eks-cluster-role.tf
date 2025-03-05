@@ -22,3 +22,7 @@ output "aws_eks_cluster_role_arn_out" {
   value = aws_iam_role.eks_role.arn
 }
 
+output "aws_eks_cluster_role_name" {
+  value = aws_iam_role.eks_role.name
+}
+
