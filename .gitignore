@@ -7,7 +7,6 @@ terraform.tfstate.backup
 
 # Ignore sensitive files
 *.pem
-*.key
 *.env
 # *.tfvars
 secrets.tfvars

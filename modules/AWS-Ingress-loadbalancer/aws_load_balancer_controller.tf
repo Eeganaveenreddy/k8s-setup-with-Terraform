@@ -60,6 +60,11 @@ resource "kubernetes_cluster_role" "alb_controller_role" {
     resources  = ["pods"]
     verbs      = ["list", "watch"]
   }
+  rule {
+    api_groups = ["coordination.k8s.io"]
+    resources  = ["leases"]
+    verbs      = ["get", "list", "watch", "create", "update", "patch"]
+  }
 
   rule {
     api_groups = ["apps"]
@@ -89,7 +94,11 @@ resource "kubernetes_cluster_role" "alb_controller_role" {
     resources  = ["targetgroupbindings"]
     verbs      = ["get", "list", "watch", "create", "update", "patch", "delete"]
   }
-
+  rule {
+    api_groups = [""]
+    resources  = ["events"]
+    verbs      = ["create", "patch"]
+  }
   rule {
     api_groups = ["networking.k8s.io"]
     resources  = ["ingresses", "ingresses/status"]
@@ -107,7 +116,7 @@ resource "kubernetes_cluster_role" "alb_controller_role" {
   }
   rule {
     api_groups = [""]
-    resources  = ["configmaps"]
+    resources  = ["configmaps", "endpoints", "nodes"]
     verbs      = ["get", "list", "watch", "create", "update", "patch"]
   }
 }
@@ -170,6 +179,7 @@ resource "kubernetes_deployment" "alb_controller_deployment" {
       spec {
         # Add serviceAccountName here
         service_account_name = "aws-load-balancer-controller"
+
         container {
           image = "602401143452.dkr.ecr.us-west-2.amazonaws.com/amazon/aws-load-balancer-controller:v2.6.1"
           name  = "aws-load-balancer-controller"
@@ -189,8 +199,35 @@ resource "kubernetes_deployment" "alb_controller_deployment" {
             name  = "AWS_REGION"
             value = "ap-south-1"
           }
+          # Mount the secret to the expected path
+          volume_mount {
+            name       = "tls-cert"
+            mount_path = "/tmp/k8s-webhook-server/serving-certs"
+            read_only  = true
+          }
+        }
+        volume {
+          name = "tls-cert"
+          secret {
+            secret_name = "aws-load-balancer-webhook-tls"
+          }
         }
       }
+      
     }
   }
+}
+
+resource "kubernetes_secret" "alb_webhook_tls" {
+  metadata {
+    name      = "aws-load-balancer-webhook-tls"
+    namespace = "kube-system"
+  }
+
+  data = {
+    "tls.crt" = file("${path.module}/tls.crt")
+    "tls.key" = file("${path.module}/tls.key")
+  }
+
+  type = "kubernetes.io/tls"
 }
