@@ -17,10 +17,19 @@ data "aws_eks_cluster_auth" "eks_auth" {
   name = data.aws_eks_cluster.my_cluster.name
 }
 
-# data "aws_iam_openid_connect_provider" "oidc" {
-#   # url = replace(data.aws_eks_cluster.my_cluster.identity[0].oidc[0].issuer, "https://", "")
-#    url = data.aws_eks_cluster.my_cluster.identity[0].oidc[0].issuer
-# }
+data "tls_certificate" "tls_cert" {
+  url = data.aws_eks_cluster.my_cluster.identity[0].oidc[0].issuer
+}
+
+resource "aws_iam_openid_connect_provider" "oidc_resource" {
+  client_id_list  = ["sts.amazonaws.com"]
+  thumbprint_list = [data.tls_certificate.tls_cert.certificates[0].sha1_fingerprint]
+  url             = data.aws_eks_cluster.my_cluster.identity[0].oidc[0].issuer
+}
+
+data "aws_iam_openid_connect_provider" "oidc" {
+  arn = aws_iam_openid_connect_provider.oidc_resource.arn
+}
 
 resource "aws_iam_role_policy_attachment" "alb_controller_policy" {
   policy_arn = aws_iam_policy.alb_controller_policy.arn
@@ -36,8 +45,8 @@ resource "aws_iam_role" "alb_controller_role" {
     Statement = [{
       Effect = "Allow"
       Principal = {
-        Federated = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/${replace(data.aws_eks_cluster.my_cluster.identity[0].oidc[0].issuer, "https://", "")}"
-        # Federated = data.aws_iam_openid_connect_provider.oidc.arn
+        # Federated = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/${replace(data.aws_eks_cluster.my_cluster.identity[0].oidc[0].issuer, "https://", "")}"
+        Federated = data.aws_iam_openid_connect_provider.oidc.arn
       }
       Action = "sts:AssumeRoleWithWebIdentity"
       Condition = {
