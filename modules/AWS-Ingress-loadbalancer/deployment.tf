@@ -28,7 +28,7 @@ resource "kubernetes_deployment" "app" {
           name  = "my-app"
           image = "nginx:latest"  # Change this to your application image
           port {
-            container_port = 8080
+            container_port = 80
           }
         }
       }
