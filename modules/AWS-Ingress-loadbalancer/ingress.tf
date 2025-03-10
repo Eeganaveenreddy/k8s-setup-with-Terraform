@@ -13,6 +13,7 @@ resource "kubernetes_ingress_v1" "app_ingress" {
       # "alb.ingress.kubernetes.io/security-groups" = aws_security_group.nlb_sg.id
       "alb.ingress.kubernetes.io/healthcheck-interval-seconds": "10"
       "alb.ingress.kubernetes.io/success-codes": "200"
+      "alb.ingress.kubernetes.io/waf-acl-arn": aws_wafv2_web_acl.alb_waf.arn
     }
   }
 
@@ -36,5 +37,22 @@ resource "kubernetes_ingress_v1" "app_ingress" {
         }
       }
     }
+  }
+}
+
+
+resource "aws_wafv2_web_acl" "alb_waf" {
+  name        = "alb-web-acl"
+  scope       = "REGIONAL"  # Use "CLOUDFRONT" for CloudFront
+  description = "WAF for ALB"
+
+  default_action {
+    allow {}
+  }
+
+  visibility_config {
+    cloudwatch_metrics_enabled = true
+    metric_name                = "alb-web-acl"
+    sampled_requests_enabled   = true
   }
 }
