@@ -10,6 +10,8 @@ resource "aws_subnet" "subnet-terr-1" {
   availability_zone = "ap-south-1a"
   tags = {
     Name = "subnet-terr-1"
+    "kubernetes.io/role/elb"    = "1" # Required for public ALB
+    "kubernetes.io/cluster/my-eks-cluster" = "owned"
   }
 }
 
@@ -24,6 +26,8 @@ resource "aws_subnet" "subnet-terr-2" {
   map_public_ip_on_launch = true
   tags = {
     Name = "subnet-terr-2"
+    "kubernetes.io/role/elb"    = "1" # Required for public ALB
+    "kubernetes.io/cluster/my-eks-cluster" = "owned"
   }
 }
 
@@ -38,5 +42,7 @@ resource "aws_subnet" "private-subnet-terr-2" {
   cidr_block = "10.0.2.0/24"
   tags = {
     Name = "private-subnet-terr-2"
+    "kubernetes.io/role/internal-elb"  = "1" # Required for internal ALB
+    "kubernetes.io/cluster/my-eks-cluster" = "owned"
   }
 }

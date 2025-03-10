@@ -18,13 +18,13 @@ data "aws_eks_cluster_auth" "eks_auth" {
 }
 
 data "tls_certificate" "tls_cert" {
-  url = data.aws_eks_cluster.my_cluster.identity[0].oidc[0].issuer
+  url = data.aws_eks_cluster.my_cluster.identity.0.oidc.0.issuer
 }
 
 resource "aws_iam_openid_connect_provider" "oidc_resource" {
   client_id_list  = ["sts.amazonaws.com"]
-  thumbprint_list = [data.tls_certificate.tls_cert.certificates[0].sha1_fingerprint]
-  url             = data.aws_eks_cluster.my_cluster.identity[0].oidc[0].issuer
+  thumbprint_list = [data.tls_certificate.tls_cert.certificates.0.sha1_fingerprint]
+  url = data.aws_eks_cluster.my_cluster.identity.0.oidc.0.issuer
 }
 
 data "aws_iam_openid_connect_provider" "oidc" {
@@ -51,7 +51,7 @@ resource "aws_iam_role" "alb_controller_role" {
       Action = "sts:AssumeRoleWithWebIdentity"
       Condition = {
         StringEquals = {
-          "${replace(data.aws_eks_cluster.my_cluster.identity[0].oidc[0].issuer, "https://", "")}:sub" = "system:serviceaccount:kube-system:aws-load-balancer-controller"
+          "${replace(data.aws_eks_cluster.my_cluster.identity.0.oidc.0.issuer, "https://", "")}:sub" = "system:serviceaccount:kube-system:aws-load-balancer-controller"
         }
       }
     }]
@@ -61,7 +61,7 @@ resource "aws_iam_role" "alb_controller_role" {
 # Create Kubernetes ClusterRole for permissions
 resource "kubernetes_cluster_role" "alb_controller_role" {
   metadata {
-    name = "aws-load-balancer-controller"
+    name = "aws-load-balancer-controller-cluster-role"
   }
 
   rule {
@@ -100,7 +100,7 @@ resource "kubernetes_cluster_role" "alb_controller_role" {
   }
   rule {
     api_groups = ["elbv2.k8s.aws"]
-    resources  = ["targetgroupbindings"]
+    resources  = ["targetgroupbindings", "targetgroupbindings/status"]
     verbs      = ["get", "list", "watch", "create", "update", "patch", "delete"]
   }
   rule {
