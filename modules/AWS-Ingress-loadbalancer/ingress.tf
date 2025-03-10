@@ -10,7 +10,7 @@ resource "kubernetes_ingress_v1" "app_ingress" {
       "alb.ingress.kubernetes.io/healthcheck-path"     = "/"   # Adjust to your app
       "alb.ingress.kubernetes.io/healthcheck-protocol" = "HTTP"
       "alb.ingress.kubernetes.io/healthcheck-port"     = "80"
-      "alb.ingress.kubernetes.io/security-groups" = aws_security_group.nlb_sg.id
+      # "alb.ingress.kubernetes.io/security-groups" = aws_security_group.nlb_sg.id
       "alb.ingress.kubernetes.io/healthcheck-interval-seconds": "10"
       "alb.ingress.kubernetes.io/success-codes": "200"
     }
@@ -22,7 +22,7 @@ resource "kubernetes_ingress_v1" "app_ingress" {
 
       http {
         path {
-          path      = "/*"
+          path      = "/"
           path_type = "Prefix"
 
           backend {
