@@ -37,7 +37,18 @@
                 "elasticloadbalancing:CreateTargetGroup",
                 "elasticloadbalancing:DescribeLoadBalancers",
                 "elasticloadbalancing:AddTags", 
-                "elasticloadbalancing:ModifyLoadBalancerAttributes"
+                "elasticloadbalancing:ModifyLoadBalancerAttributes",
+                "elasticloadbalancing:ModifyRule",
+                "elasticloadbalancing:DescribeListeners",
+                "elasticloadbalancing:DescribeRules",
+                "elasticloadbalancing:DescribeLoadBalancers",
+                "elasticloadbalancing:DescribeTargetGroups",
+                "elasticloadbalancing:RegisterTargets",
+                "elasticloadbalancing:DeregisterTargets",
+                "ec2:DescribeInstances",
+                "ec2:DescribeSecurityGroups",
+                "ec2:DescribeSubnets",
+                "ec2:DescribeVpcs"
             ],
             "Resource": "*"
         },
