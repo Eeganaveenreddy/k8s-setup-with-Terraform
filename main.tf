@@ -16,10 +16,10 @@ module "eks" {
   eks_cluster_role = module.iam-policy.aws_eks_cluster_role_name
 }
 
-module "AWS-Ingress-loadbalancer" {
-  source = "./modules/AWS-Ingress-loadbalancer"
-  node_group_role_name = module.eks.node_group_role_name_output
-  eks_cluster_name = module.eks.eks_cluster_name_output
-  vpc_id = module.VPC.MAIN_TF_VPC_ID 
-  depends_on = [ module.eks ]
-}
+# module "AWS-Ingress-loadbalancer" {
+#   source = "./modules/AWS-Ingress-loadbalancer"
+#   node_group_role_name = module.eks.node_group_role_name_output
+#   eks_cluster_name = module.eks.eks_cluster_name_output
+#   vpc_id = module.VPC.MAIN_TF_VPC_ID 
+#   depends_on = [ module.eks ]
+# }

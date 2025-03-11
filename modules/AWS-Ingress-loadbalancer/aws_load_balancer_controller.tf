@@ -59,7 +59,7 @@ resource "aws_iam_role" "alb_controller_role" {
 }
 
 # Create Kubernetes ClusterRole for permissions
-resource "kubernetes_cluster_role" "alb_controller_role" {
+resource "kubernetes_cluster_role" "alb_cluster_role" {
   metadata {
     name = "aws-load-balancer-controller-cluster-role"
   }
@@ -139,7 +139,7 @@ resource "kubernetes_cluster_role_binding" "alb_controller_role_binding" {
   role_ref {
     api_group = "rbac.authorization.k8s.io"
     kind      = "ClusterRole"
-    name      = kubernetes_cluster_role.alb_controller_role.metadata[0].name
+    name      = kubernetes_cluster_role.alb_cluster_role.metadata[0].name
   }
 
   subject {
