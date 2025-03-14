@@ -3,7 +3,7 @@ resource "kubernetes_service_account" "alb_controller" {
     name      = "aws-load-balancer-controller"
     namespace = "kube-system"
     annotations = {
-      "eks.amazonaws.com/role-arn" = aws_iam_role.alb_controller_role.arn
+      "eks.amazonaws.com/role-arn" = aws_iam_role.aws_load_balancer_controller_role.arn
     }
   }
 }
@@ -33,11 +33,11 @@ data "aws_iam_openid_connect_provider" "oidc" {
 
 resource "aws_iam_role_policy_attachment" "alb_controller_policy" {
   policy_arn = aws_iam_policy.alb_controller_policy.arn
-  role       = aws_iam_role.alb_controller_role.name
+  role       = aws_iam_role.aws_load_balancer_controller_role.name
 }
 
 
-resource "aws_iam_role" "alb_controller_role" {
+resource "aws_iam_role" "aws_load_balancer_controller_role" {
   name = "eks-alb-controller-role"
 
   assume_role_policy = jsonencode({
@@ -52,6 +52,7 @@ resource "aws_iam_role" "alb_controller_role" {
       Condition = {
         StringEquals = {
           "${replace(data.aws_eks_cluster.my_cluster.identity.0.oidc.0.issuer, "https://", "")}:sub" = "system:serviceaccount:kube-system:aws-load-balancer-controller"
+          "${replace(data.aws_eks_cluster.my_cluster.identity.0.oidc.0.issuer, "https://", "")}:aud" = "sts.amazonaws.com"
         }
       }
     }]
@@ -66,9 +67,10 @@ resource "kubernetes_cluster_role" "alb_cluster_role" {
 
   rule {
     api_groups = [""]
-    resources  = ["pods"]
-    verbs      = ["list", "watch"]
+    resources  = ["pods", "services", "endpoints", "events", "configmaps", "nodes"]
+    verbs      = ["get", "list", "watch", "create", "update", "patch"]
   }
+
   rule {
     api_groups = ["coordination.k8s.io"]
     resources  = ["leases"]
@@ -83,50 +85,14 @@ resource "kubernetes_cluster_role" "alb_cluster_role" {
 
   rule {
     api_groups = ["networking.k8s.io"]
-    resources  = ["ingresses"]
-    verbs      = ["get", "list", "watch"]
+    resources  = ["ingresses", "ingresses/status", "ingressclasses"]
+    verbs      = ["get", "list", "watch", "create", "update", "patch", "delete"]
   }
 
   rule {
-    api_groups = ["networking.k8s.io"]
-    resources  = ["ingressclasses"]
-    verbs      = ["get", "list", "watch"]
-  }
-
-  rule {
-    api_groups = ["networking.k8s.io"]
-    resources  = ["ingresses", "ingresses/status"]
-    verbs      = ["get", "list", "watch", "create", "update", "patch", "delete"]
-  }
-  rule {
     api_groups = ["elbv2.k8s.aws"]
-    resources  = ["targetgroupbindings", "targetgroupbindings/status"]
+    resources  = ["targetgroupbindings", "targetgroupbindings/status", "ingressclassparams"]
     verbs      = ["get", "list", "watch", "create", "update", "patch", "delete"]
-  }
-  rule {
-    api_groups = [""]
-    resources  = ["events"]
-    verbs      = ["create", "patch"]
-  }
-  rule {
-    api_groups = ["networking.k8s.io"]
-    resources  = ["ingresses", "ingresses/status"]
-    verbs      = ["get", "list", "watch", "create", "update", "patch", "delete"]
-  }
-  rule {
-    api_groups = [""]
-    resources  = ["services"]
-    verbs      = ["get", "list", "watch"]
-  }
-  rule {
-    api_groups = ["elbv2.k8s.aws"]
-    resources  = ["ingressclassparams"]
-    verbs      = ["get", "list", "watch"]
-  }
-  rule {
-    api_groups = [""]
-    resources  = ["configmaps", "endpoints", "nodes"]
-    verbs      = ["get", "list", "watch", "create", "update", "patch"]
   }
 }
 
@@ -190,7 +156,7 @@ resource "kubernetes_deployment" "alb_controller_deployment" {
         service_account_name = "aws-load-balancer-controller"
 
         container {
-          image = "602401143452.dkr.ecr.us-west-2.amazonaws.com/amazon/aws-load-balancer-controller:v2.6.1"
+          image = "public.ecr.aws/eks/aws-load-balancer-controller:v2.7.1"
           name  = "aws-load-balancer-controller"
 
           security_context {
@@ -204,10 +170,10 @@ resource "kubernetes_deployment" "alb_controller_deployment" {
             "--aws-region=ap-south-1"
           ]
 
-          env {
-            name  = "AWS_REGION"
-            value = "ap-south-1"
-          }
+          # env {
+          #   name  = "AWS_REGION"
+          #   value = "ap-south-1"
+          # }
           # Mount the secret to the expected path
           volume_mount {
             name       = "tls-cert"
