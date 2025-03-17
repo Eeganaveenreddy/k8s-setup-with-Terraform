@@ -3,7 +3,8 @@ resource "kubernetes_ingress_v1" "app_ingress" {
     name      = "app-ingress"
     namespace = "default"
     annotations = {
-      "kubernetes.io/ingress.class"                    = "alb"
+      # "kubernetes.io/ingress.class"                    = "alb"
+      "alb.ingress.kubernetes.io/listen-ports"    = "[{\"HTTP\":80},{\"HTTPS\":443}]"
       "alb.ingress.kubernetes.io/scheme"               = "internet-facing"  # Change to "internal" if needed
       "alb.ingress.kubernetes.io/load-balancer-type"   = "nlb"  # Use NLB instead of ALB
       "alb.ingress.kubernetes.io/target-type"          = "ip"
@@ -19,7 +20,7 @@ resource "kubernetes_ingress_v1" "app_ingress" {
   spec {
     ingress_class_name = "alb"
     rule {
-      host = "cloudops-platforms.cloud"  # Replace with your domain
+      host = "egas.com"  # Replace with your domain
 
       http {
         path {
