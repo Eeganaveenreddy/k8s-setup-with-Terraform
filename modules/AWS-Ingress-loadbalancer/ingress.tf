@@ -1,5 +1,5 @@
 resource "kubernetes_ingress_v1" "app_ingress" {
-  depends_on = [ kubectl_manifest.letsencrypt_issuer ]
+  
   metadata {
     name      = "app-ingress"
     namespace = "default"
@@ -15,16 +15,16 @@ resource "kubernetes_ingress_v1" "app_ingress" {
       # "alb.ingress.kubernetes.io/security-groups" = aws_security_group.nlb_sg.id
       "alb.ingress.kubernetes.io/healthcheck-interval-seconds": "10"
       "alb.ingress.kubernetes.io/success-codes": "200"
-      cert-manager.io/cluster-issuer: "letsencrypt-prod"
+      # "cert-manager.io/cluster-issuer": "letsencrypt-prod"
     }
   }
   
 
   spec {
-    tls {
-      hosts      = ["egas.com"]
-      secret_name = "egas-tls"
-    }
+    # tls {
+    #   hosts      = ["egas.com"]
+    #   secret_name = "my-tls-secret"
+    # }
     ingress_class_name = "alb"
     
     rule {

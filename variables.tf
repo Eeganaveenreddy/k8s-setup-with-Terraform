@@ -20,3 +20,5 @@ variable "node_groups" {
   }))
 }
 
+# variable "cluster_endpoint" {}
+# variable "cluster_certificate_authority_data" {}
