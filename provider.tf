@@ -4,6 +4,10 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 5.0"
     }
+    kubectl = {
+      source  = "gavinbunney/kubectl"
+      version = ">= 1.14.0"
+    }
   }
 }
 
@@ -15,6 +19,11 @@ provider "kubernetes" {
   config_path = "/home/scott/.kube/config" # Replace with your kubeconfig path
   #context = "your-context" #if needed
 }
+
+provider "kubectl" {
+  config_path = "~/.kube/config"
+}
+
 
 
 
