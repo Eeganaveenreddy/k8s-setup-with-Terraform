@@ -5,7 +5,7 @@
 terraform.tfstate
 terraform.tfstate.backup
 
-
+ca.crt
 registry.terraform.io/*
 registry.terraform.io/
 registry.terraform.io/hashicorp/aws/terraform-provider-aws_5.91.0_linux_amd64.zip
