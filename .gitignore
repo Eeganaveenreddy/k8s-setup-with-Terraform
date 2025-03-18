@@ -18,6 +18,7 @@ terraform-provider-aws_5.91.0_linux_amd64*
 # Ignore sensitive files
 *.pem
 *.env
+*.zip
 # *.tfvars
 secrets.tfvars
 
