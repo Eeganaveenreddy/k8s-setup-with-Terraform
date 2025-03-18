@@ -5,6 +5,9 @@
 terraform.tfstate
 terraform.tfstate.backup
 
+
+registry.terraform.io
+
 # Ignore sensitive files
 *.pem
 *.env
