@@ -16,13 +16,18 @@ module "eks" {
   eks_cluster_role = module.iam-policy.aws_eks_cluster_role_name
 }
 
-module "AWS-Ingress-loadbalancer" {
-  source = "./modules/AWS-Ingress-loadbalancer"
-  # depends_on = [ kubectl_manifest.letsencrypt_issuer ]
-  node_group_role_name = module.eks.node_group_role_name_output
-  eks_cluster_name = module.eks.eks_cluster_name_output
-  # cluster_endpoint = module.eks.eks_cluster_endpoint
-  # cluster_certificate_authority_data = module.eks.eks_cluster_certificate_authority_data
-  vpc_id = module.VPC.MAIN_TF_VPC_ID 
-  depends_on = [ module.eks ]
-}
+# module "EBS-CSI-DRIVER-ADD-ON" {
+#   source = "./modules/ebs-csi-driver"
+#   eks_cluster_name = module.eks.eks_cluster_name_output
+# }
+
+# module "AWS-Ingress-loadbalancer" {
+#   source = "./modules/AWS-Ingress-loadbalancer"
+#   # depends_on = [ kubectl_manifest.letsencrypt_issuer ]
+#   node_group_role_name = module.eks.node_group_role_name_output
+#   eks_cluster_name = module.eks.eks_cluster_name_output
+#   # cluster_endpoint = module.eks.eks_cluster_endpoint
+#   # cluster_certificate_authority_data = module.eks.eks_cluster_certificate_authority_data
+#   vpc_id = module.VPC.MAIN_TF_VPC_ID 
+#   depends_on = [ module.eks ]
+# }
