@@ -7,6 +7,10 @@ terraform.tfstate.backup
 
 
 registry.terraform.io
+1.14.0.json
+index.json
+terraform-provider-kubectl*
+
 
 # Ignore sensitive files
 *.pem
