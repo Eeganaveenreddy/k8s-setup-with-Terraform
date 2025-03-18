@@ -1,14 +1,14 @@
 node_groups = {
-    dev = {
-        desired_size = 2
+    apigee-data = {
+        desired_size = 3
         max_size = 4
-        min_size = 1
+        min_size = 3
         instance_types = ["t3.xlarge"]
     }
-    prod = {
+    apigee-runtime = {
         desired_size = 3
         max_size = 5
-        min_size = 2
+        min_size = 3
         instance_types = ["t3.xlarge"]
     }
 }
