@@ -10,7 +10,7 @@ module "iam-policy" {
 module "eks" {
   source = "./modules/EKS"
   subnet_ids = [module.VPC.public_subnet_id-1, module.VPC.public_subnet_id-2]
-  eks_policy_attach = module.iam-policy
+  eks_policy_attach = module.iam-policy.ekscluster-policy
   role_arn = module.iam-policy.aws_eks_cluster_role_arn_out
   node_groups = var.node_groups
   eks_cluster_role = module.iam-policy.aws_eks_cluster_role_name

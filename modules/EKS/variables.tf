@@ -2,7 +2,9 @@ variable "subnet_ids" {
     type = list(string)
 }
 
-variable "eks_policy_attach" {}
+variable "eks_policy_attach" {
+  type = string
+}
 
 variable "role_arn" {
     type = string
@@ -19,6 +21,7 @@ variable "node_groups" {
     max_size     = number
     min_size     = number
     instance_types = list(string)
+    labels        = optional(map(string), {})
   }))
   # default = {
   #   "t3-large-nodes" = {

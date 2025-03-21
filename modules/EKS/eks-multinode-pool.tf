@@ -22,9 +22,12 @@ resource "aws_eks_node_group" "eks_node_groups" {
   disk_size     = 20
   capacity_type = "ON_DEMAND"
 
+  labels = each.value.labels
+
   tags = {
     Name = "${each.key}"
   }
+  
 }
 
 

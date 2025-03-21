@@ -5,7 +5,8 @@ node_groups = {
         min_size = 1
         instance_types = ["t3.2xlarge"]
          labels = {
-            role = "apigee-data"
+            "role" = "apigee-data"
+            "cloud.google.com/gke-nodepool" = "apigee-data"
         }
     }
     apigee-runtime = {
@@ -14,7 +15,8 @@ node_groups = {
         min_size = 2
         instance_types = ["t3.2xlarge"]
         labels = {
-            role = "apigee-runtime"
+            "role" = "apigee-runtime"
+            "cloud.google.com/gke-nodepool" = "apigee-runtime"
         }
     }
 }
