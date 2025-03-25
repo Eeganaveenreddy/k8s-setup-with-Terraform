@@ -7,43 +7,54 @@ resource "aws_iam_role" "ebs_csi_role" {
     Statement = [{
       Effect = "Allow"
       Principal = {
-        # Federated = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/${replace(data.aws_eks_cluster.my_cluster.identity[0].oidc[0].issuer, "https://", "")}"
-        Federated = data.aws_iam_openid_connect_provider.oidc.arn
+        Federated = aws_iam_openid_connect_provider.eks_oidc.arn
       }
       Action = "sts:AssumeRoleWithWebIdentity"
       Condition = {
         StringEquals = {
-          "${replace(data.aws_eks_cluster.my_cluster.identity.0.oidc.0.issuer, "https://", "")}:sub" = "system:serviceaccount:kube-system:aws-load-balancer-controller"
-          "${replace(data.aws_eks_cluster.my_cluster.identity.0.oidc.0.issuer, "https://", "")}:aud" = "sts.amazonaws.com"
+          "${replace(data.aws_eks_cluster.my_cluster.identity[0].oidc[0].issuer, "https://", "")}:sub" = "system:serviceaccount:kube-system:ebs-csi-controller-sa"
         }
       }
     }]
   })
 }
 
-resource "aws_iam_role_policy_attachment" "ebs_csi_attach" {
-  role       = aws_iam_role.ebs_csi_role.name
-  policy_arn = aws_iam_policy.ebs_csi_policy.arn
-}
 
 data "aws_eks_cluster" "my_cluster" {
   name = var.eks_cluster_name
 }
-
 data "aws_eks_cluster_auth" "eks_auth" {
   name = data.aws_eks_cluster.my_cluster.name
 }
 
+# Fetch OIDC Provider Details
 data "tls_certificate" "tls_cert" {
   url = data.aws_eks_cluster.my_cluster.identity.0.oidc.0.issuer
 }
 
-resource "aws_iam_openid_connect_provider" "oidc_resource" {
+resource "aws_iam_openid_connect_provider" "eks_oidc" {
   client_id_list  = ["sts.amazonaws.com"]
   thumbprint_list = [data.tls_certificate.tls_cert.certificates.0.sha1_fingerprint]
   url = data.aws_eks_cluster.my_cluster.identity.0.oidc.0.issuer
 }
 
-data "aws_iam_openid_connect_provider" "oidc" {
-  arn = aws_iam_openid_connect_provider.oidc_resource.arn
+
+# data "aws_iam_openid_connect_provider" "oidc" {
+#   url = data.aws_eks_cluster.my_cluster.identity[0].oidc[0].issuer
+# }
+
+resource "aws_iam_role_policy_attachment" "ebs_csi_attach" {
+  role       = aws_iam_role.ebs_csi_role.name
+  # policy_arn = aws_iam_policy.ebs_csi_policy.arn
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
 }
+
+output "ebs_csi_iam_role_arn" {
+  value = aws_iam_role.ebs_csi_role.arn
+}
+
+
+
+
+
+

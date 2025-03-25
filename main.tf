@@ -16,11 +16,11 @@ module "eks" {
   eks_cluster_role = module.iam-policy.aws_eks_cluster_role_name
 }
 
-module "EBS-CSI-DRIVER-ADD-ON" {
-  source = "./modules/ebs-csi-driver"
-  eks_cluster_name = module.eks.eks_cluster_name_output
-  depends_on = [ module.eks ]
-}
+# module "EBS-CSI-DRIVER-ADD-ON" {
+#   source = "./modules/ebs-csi-driver"
+#   eks_cluster_name = module.eks.eks_cluster_name_output
+#   depends_on = [ module.eks ]
+# }
 
 # module "AWS-Ingress-loadbalancer" {
 #   source = "./modules/AWS-Ingress-loadbalancer"

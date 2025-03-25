@@ -18,7 +18,15 @@ resource "aws_iam_policy" "ebs_csi_policy" {
           "ec2:DescribeSnapshots",
           "ec2:DescribeTags",
           "ec2:DescribeVolumes",
-          "ec2:DescribeVolumesModifications"
+          "ec2:DescribeVolumeAttribute",
+          "ec2:DescribeVolumeStatus",
+          "ec2:DescribeVolumesModifications",
+          "ec2:CreateVolume",
+          "ec2:DeleteVolume",
+          "ec2:DescribeVolumes",
+          "ec2:AttachVolume",
+          "ec2:DetachVolume",
+          "ec2:CreateTags"
         ]
         Resource = "*"
       },
@@ -40,6 +48,11 @@ resource "aws_iam_policy" "ebs_csi_policy" {
           "ec2:CreateVolume"
         ]
         Resource = "*"
+      },
+      {
+        "Effect": "Allow",
+        "Action": "sts:AssumeRoleWithWebIdentity",
+        "Resource": "*"
       }
     ]
   })
