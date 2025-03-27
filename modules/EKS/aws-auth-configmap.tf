@@ -5,7 +5,17 @@ resource "kubernetes_config_map" "aws_auth" {
   }
 
   data = {
+    mapUsers = <<YAML
+    - userarn: arn:aws:iam::288761760029:user/kalyani-10
+      username: kalyani-10
+      groups:
+        - system:masters
+    YAML
     mapRoles = <<YAML
+    - rolearn: arn:aws:iam::288761760029:role/eks-console-access
+      username: eks-console-access
+      groups:
+        - system:masters
     - rolearn: ${var.role_arn}
       username: ${var.eks_cluster_role}
       groups:
