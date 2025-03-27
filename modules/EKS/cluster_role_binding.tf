@@ -25,13 +25,12 @@ resource "kubernetes_cluster_role_binding" "eks_console_view" {
   role_ref {
     api_group = "rbac.authorization.k8s.io"
     kind      = "ClusterRole"
-    name      = "view" # This gives read-only access
+    name      = "cluster-admin"
   }
 
   subject {
     kind      = "User"
-    # name      = "arn:aws:iam::YOUR_ACCOUNT_ID:role/your-iam-role" # Replace with your IAM role ARN
-    name = var.role_arn
+    name      = "kalyani-10"
     api_group = "rbac.authorization.k8s.io"
   }
 }
