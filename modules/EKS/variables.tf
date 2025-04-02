@@ -17,20 +17,13 @@ variable "eks_cluster_role" {
 variable "node_groups" {
   description = "Map of node groups"
   type = map(object({
+    cluster_name = string
     desired_size = number
     max_size     = number
     min_size     = number
     instance_types = list(string)
     labels        = optional(map(string), {})
   }))
-  # default = {
-  #   "t3-large-nodes" = {
-  #     instance_types = ["t3.large"]
-  #     desired_size   = 2
-  #     max_size       = 5
-  #     min_size       = 1
-  #   }
-  # }
 }
 
 variable "region" {
@@ -38,11 +31,7 @@ variable "region" {
   type = string
 }
 
-
-variable "eks_clusters" {
-  type = map(object({
-    name       = string
-    role_arn   = string
-    subnet_ids = list(string)
-  }))
+variable "cluster_names" {
+  type    = list(string)
+  default = ["eks-cluster-1", "eks-cluster-2", "eks-cluster-3"]
 }
