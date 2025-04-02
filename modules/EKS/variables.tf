@@ -37,3 +37,12 @@ variable "region" {
   default = "ap-south-1"
   type = string
 }
+
+
+variable "eks_clusters" {
+  type = map(object({
+    name       = string
+    role_arn   = string
+    subnet_ids = list(string)
+  }))
+}

@@ -1,12 +1,25 @@
-resource "aws_eks_cluster" "eks_cluster" {
-  name     = "my-eks-cluster"
-  role_arn = var.role_arn
+# resource "aws_eks_cluster" "eks_cluster" {
+#   name     = "my-eks-cluster"
+#   role_arn = var.role_arn
+
+#   vpc_config {
+#     # subnet_ids = ["subnet-xxxxxx", "subnet-yyyyyy"] # Use your subnet IDs
+#     subnet_ids = var.subnet_ids
+#   }
+#     depends_on = [ var.eks_policy_attach ]
+# }
+
+resource "aws_eks_cluster" "eks_clusters" {
+  for_each = var.eks_clusters
+
+  name     = each.value.name
+  role_arn = each.value.role_arn
 
   vpc_config {
-    # subnet_ids = ["subnet-xxxxxx", "subnet-yyyyyy"] # Use your subnet IDs
-    subnet_ids = var.subnet_ids
+    subnet_ids = each.value.subnet_ids
   }
-    depends_on = [ var.eks_policy_attach ]
+
+  depends_on = [var.eks_policy_attach]
 }
 
 resource "null_resource" "update_kubeconfig" {

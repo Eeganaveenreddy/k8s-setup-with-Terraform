@@ -21,5 +21,13 @@ variable "node_groups" {
   }))
 }
 
+variable "eks_clusters" {
+  type = map(object({
+    name       = string
+    role_arn   = string
+    subnet_ids = list(string)
+  }))
+}
+
 # variable "cluster_endpoint" {}
 # variable "cluster_certificate_authority_data" {}
